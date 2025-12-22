@@ -12,19 +12,22 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
 
-      - name: Checkout repository
+      - name: Checkout sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
 
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'microsoft'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
@@ -69,8 +72,6 @@ jobs:
             echo "tag_name=${MOD_VERSION}-${MINECRAFT_VERSION}-fabric"
             echo "release_name=${RELEASE_NAME}"
             echo "release_body<<__REL_BODY__"
-            echo "Mod Version: ${MOD_VERSION}"
-            echo "Minecraft Version: ${MINECRAFT_VERSION}"
             echo ""
             if [ -n "${LAST_TAG}" ]; then
               echo "Commits since ${LAST_TAG}:"
