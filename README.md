@@ -1,5 +1,8 @@
 # SpeedrunUtils
 
+<!-- markdownlint-disable MD033 -- img tag used to specify width -->
+<img src="logo.webp" alt="SpeedrunUtils Logo" width="150" />
+
 A Minecraft Fabric mod for managing speedruns with built-in timer, blindness mechanics, and run tracking.
 
 > **Note:** This mod is still in development and its documentation is AI-generated.
