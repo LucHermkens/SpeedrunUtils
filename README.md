@@ -35,6 +35,16 @@ clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
     - Continues the timer
     - Removes blindness from all players
 
+#### `/stoprun`
+
+- **Permission Level:** 0 (all players)
+- **Description:** Stops the current speedrun and clears the timer
+- **Behavior:**
+  - Stops the run (if one is active)
+  - Clears the timer
+  - Removes blindness from all players (in case the run was paused)
+  - Broadcasts: “Run stopped. Timer cleared.”
+
 #### `/newrun`
 
 - **Permission Level:** 0 (all players)
