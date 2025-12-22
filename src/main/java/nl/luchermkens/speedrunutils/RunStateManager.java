@@ -5,6 +5,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.scoreboard.*;
 import net.minecraft.scoreboard.number.BlankNumberFormat;
 
@@ -20,6 +23,10 @@ import java.util.Map;
 public class RunStateManager {
     private static RunStateManager instance;
 
+    // Split requirements (server-wide, across all online players)
+    public static final int REQUIRED_BLAZE_RODS = 7;
+    public static final int REQUIRED_ENDER_PEARLS = 14;
+
     private RunState state = RunState.NOT_STARTED;
     private long startTime = 0;
     private long pausedTime = 0;
@@ -30,11 +37,15 @@ public class RunStateManager {
     // Splits tracking
     private Map<Split, Long> splits = new LinkedHashMap<>();
     private ScoreboardObjective splitsObjective = null;
+    private long lastAggregateItemCheckMs = 0;
 
     public enum Split {
         IRON_RETRIEVED("First Iron"),
         ENTERED_NETHER("Entered Nether"),
+        ENTERED_NETHER_FORTRESS("Entered Nether Fortress"),
         FIRST_BLAZE_KILLED("First Blaze Kill"),
+        BLAZE_RODS_DONE("Blaze Rods Done"),
+        ENDER_PEARLS_DONE("Ender Pearls Done"),
         CRAFTED_FIRST_ENDER_EYE("First Ender Eye"),
         FOUND_STRONGHOLD("Stronghold Found"),
         ENTERED_END("Entered End");
@@ -81,6 +92,7 @@ public class RunStateManager {
         this.totalPausedDuration = 0;
         this.dragonKilled = false;
         this.splits.clear();
+        this.lastAggregateItemCheckMs = 0;
 
         // Setup scoreboard
         setupScoreboard(server);
@@ -119,6 +131,7 @@ public class RunStateManager {
         this.dragonKilled = false;
         this.splits.clear();
         this.splitsObjective = null;
+        this.lastAggregateItemCheckMs = 0;
     }
 
     /**
@@ -132,6 +145,7 @@ public class RunStateManager {
         this.totalPausedDuration = 0;
         this.dragonKilled = false;
         this.splits.clear();
+        this.lastAggregateItemCheckMs = 0;
 
         // Clear timer from actionbar immediately
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -180,6 +194,57 @@ public class RunStateManager {
                 player.sendMessage(Text.literal(timeDisplay.toString()), true);
             }
         }
+    }
+
+    /**
+     * Checks server-wide item totals (across all online players) and records
+     * aggregate-item splits when thresholds are met.
+     *
+     * This is intentionally throttled to avoid scanning inventories every tick.
+     */
+    public void updateAggregateItemSplits(MinecraftServer server) {
+        if (state != RunState.RUNNING) return;
+        if (hasSplit(Split.BLAZE_RODS_DONE) && hasSplit(Split.ENDER_PEARLS_DONE)) return;
+
+        long now = System.currentTimeMillis();
+        if (now - lastAggregateItemCheckMs < 250) return; // throttle: ~4x/sec
+        lastAggregateItemCheckMs = now;
+
+        int totalBlazeRods = 0;
+        int totalEnderPearls = 0;
+
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            totalBlazeRods += countItemEverywhere(player, Items.BLAZE_ROD);
+            totalEnderPearls += countItemEverywhere(player, Items.ENDER_PEARL);
+        }
+
+        if (totalBlazeRods >= REQUIRED_BLAZE_RODS && !hasSplit(Split.BLAZE_RODS_DONE)) {
+            recordSplit(Split.BLAZE_RODS_DONE, server);
+        }
+        if (totalEnderPearls >= REQUIRED_ENDER_PEARLS && !hasSplit(Split.ENDER_PEARLS_DONE)) {
+            recordSplit(Split.ENDER_PEARLS_DONE, server);
+        }
+    }
+
+    private static int countItemEverywhere(ServerPlayerEntity player, Item item) {
+        int count = 0;
+
+        var inv = player.getInventory();
+        for (int i = 0; i < inv.size(); i++) {
+            count += countInStack(inv.getStack(i), item);
+        }
+
+        var ec = player.getEnderChestInventory();
+        for (int i = 0; i < ec.size(); i++) {
+            count += countInStack(ec.getStack(i), item);
+        }
+
+        return count;
+    }
+
+    private static int countInStack(ItemStack stack, Item item) {
+        if (stack == null || stack.isEmpty()) return 0;
+        return stack.isOf(item) ? stack.getCount() : 0;
     }
 
     public void applyBlindness(ServerPlayerEntity player) {

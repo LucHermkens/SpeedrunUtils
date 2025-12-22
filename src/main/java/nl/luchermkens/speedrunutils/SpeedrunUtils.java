@@ -42,7 +42,9 @@ public class SpeedrunUtils implements ModInitializer {
 
 		// Update timer every tick
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
-			RunStateManager.getInstance().updateTimer(server);
+			RunStateManager manager = RunStateManager.getInstance();
+			manager.updateTimer(server);
+			manager.updateAggregateItemSplits(server);
 		});
 
 		// Listen for entity deaths (for blaze kill detection)

@@ -38,6 +38,14 @@ public class AdvancementSplitsMixin {
                 manager.recordSplit(RunStateManager.Split.FOUND_STRONGHOLD,
                     owner.getEntityWorld().getServer());
             }
+
+            // Check for "A Terrible Fortress" - entering a nether fortress
+            // Vanilla advancement id: minecraft:nether/find_fortress
+            if (advancementId.contains("nether/find_fortress") &&
+                !manager.hasSplit(RunStateManager.Split.ENTERED_NETHER_FORTRESS)) {
+                manager.recordSplit(RunStateManager.Split.ENTERED_NETHER_FORTRESS,
+                    owner.getEntityWorld().getServer());
+            }
         }
     }
 }
