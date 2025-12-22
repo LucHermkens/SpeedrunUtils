@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - gradle.properties
 
 permissions:
   contents: write
@@ -17,25 +19,63 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check mod_version changed
+        id: version_check
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          current="$(awk -F= '$1=="mod_version"{print $2}' gradle.properties | tr -d '\r' | tail -n 1)"
+          if [ -z "${current}" ]; then
+            current="unknown"
+          fi
+
+          previous="unknown"
+          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            if git show HEAD~1:gradle.properties >/dev/null 2>&1; then
+              previous="$(git show HEAD~1:gradle.properties | awk -F= '$1=="mod_version"{print $2}' | tr -d '\r' | tail -n 1)"
+              if [ -z "${previous}" ]; then
+                previous="unknown"
+              fi
+            fi
+          fi
+
+          changed="false"
+          if [ "${current}" != "${previous}" ]; then
+            changed="true"
+          fi
+
+          {
+            echo "current=${current}"
+            echo "previous=${previous}"
+            echo "changed=${changed}"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Setup JDK
+        if: steps.version_check.outputs.changed == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'microsoft'
 
       - name: Validate Gradle wrapper
+        if: steps.version_check.outputs.changed == 'true'
         uses: gradle/actions/wrapper-validation@v4
 
       - name: Setup Gradle (with cache)
+        if: steps.version_check.outputs.changed == 'true'
         uses: gradle/actions/setup-gradle@v5
 
       - name: Make Gradle wrapper executable
+        if: steps.version_check.outputs.changed == 'true'
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
+        if: steps.version_check.outputs.changed == 'true'
         run: ./gradlew build
 
       - name: Capture build artifacts
+        if: steps.version_check.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -50,12 +90,14 @@ jobs:
           done
 
       - name: Upload build artifacts
+        if: steps.version_check.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
           path: build/libs/
 
       - name: Prepare release info
+        if: steps.version_check.outputs.changed == 'true'
         id: rel
         shell: bash
         run: |
@@ -98,6 +140,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
+        if: steps.version_check.outputs.changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.rel.outputs.tag_name }}
