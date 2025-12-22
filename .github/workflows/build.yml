@@ -36,6 +36,20 @@ jobs:
         run: ./gradlew build
 
       - name: Capture build artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build-assets
+          shopt -s nullglob
+          for f in build/libs/*.jar; do
+            b="$(basename "$f")"
+            case "$b" in
+              *-dev.jar|*-sources.jar) continue ;;
+            esac
+            cp "$f" build-assets/
+          done
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
@@ -89,3 +103,4 @@ jobs:
           tag_name: ${{ steps.rel.outputs.tag_name }}
           name: ${{ steps.rel.outputs.release_name }}
           body: ${{ steps.rel.outputs.release_body }}
+          files: build-assets/*.jar
