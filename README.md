@@ -11,6 +11,10 @@ A Minecraft Fabric mod for managing speedruns with built-in timer, blindness mec
 clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo truncate -s 0 "/var/lib/docker/containers/$(docker inspect -f '{{.Id}}' minecraft)/local-logs/container.log"; dockerr up -d minecraft; docker logs -f minecraft
  -->
 
+## Preview
+
+<img src="preview.webp" alt="SpeedrunUtils Preview" width="600" />
+
 ## Features
 
 ### Commands
@@ -130,7 +134,3 @@ The built JAR will be in `build/libs/`
 - Fabric Loader >= 0.18.3
 - Fabric API
 - Java 21+
-
-## License
-
-MIT
