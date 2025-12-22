@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"package": "nl.luchermkens.speedrunutils.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"PlayerJoinMixin",
+		"EnderDragonFightMixin",
+		"AdvancementSplitsMixin",
+		"CraftingResultSlotMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

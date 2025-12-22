@@ -1,0 +1,16 @@
+# Rules
+
+If any files have been changed, run `.\gradlew.bat build` on Windows or `./gradlew build` on Linux to verify a successful build.
+
+The project is a Minecraft 1.21.11 Fabric mod.
+The project is a mod for speedruns.
+
+Always use `.getEntityWorld().getServer()` instead of `.getWorld().getServer()` to get the server instance.
+
+Keep the conclusion you write at the end of your response: concise and to the point.
+
+Use the following command:
+`javap -classpath .gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-{cacheid}/{version}/minecraft-common-{cacheid}-{version}.jar -private net.minecraft.scoreboard.ScoreboardObjective`
+to get the decompiled code of the `ScoreboardObjective` class for example if needed.
+Make sure to replace `{cacheid}` and `{version}` with the actual values.
+Cache ID example: `54f2c19a0c` and version example: `1.21.11-net.fabricmc.yarn.1_21_11.1.21.11+build.3-v2`
