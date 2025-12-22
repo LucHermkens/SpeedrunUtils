@@ -59,15 +59,15 @@ jobs:
             echo "short_sha=${SHORT_SHA}"
             echo "tag_name=${SHORT_SHA}"
             echo "release_name=${SHORT_SHA}"
-            echo "release_body<<'EOF'"
+            echo "release_body<<__REL_BODY__"
             if [ -n "${LAST_TAG}" ]; then
               echo "Commits since ${LAST_TAG}:"
             else
               echo "Commits:"
             fi
-            git log ${RANGE} --no-merges --pretty=format:'- %s (%h)' || true
+            git log "${RANGE}" --no-merges --pretty=format:'- %s (%h)' || true
             echo ""
-            echo "EOF"
+            echo "__REL_BODY__"
           } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
