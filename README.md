@@ -1,8 +1,8 @@
-# SpeedrunUtils Mod
+# SpeedrunUtils
 
 A Minecraft Fabric mod for managing speedruns with built-in timer, blindness mechanics, and run tracking.
 
-**Note:** This mod is still in development and its documentation is AI-generated.
+> **Note:** This mod is still in development and its documentation is AI-generated.
 
 <!--
 clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo truncate -s 0 "/var/lib/docker/containers/$(docker inspect -f '{{.Id}}' minecraft)/local-logs/container.log"; dockerr up -d minecraft; docker logs -f minecraft
@@ -50,6 +50,7 @@ clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
 - **Permission Level:** 0 (all players)
 - **Description:** Saves the current run and prepares for a new speedrun
 - **Behavior:**
+  - Stops the run (if one is active)
   - Saves the current run data to `speedruns.txt` in the server root
   - Records: timestamp, player names, time, and completion status
   - Resets the run state
@@ -62,16 +63,14 @@ clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
 2. **Run Start:** Any player runs `/startrun` to begin the countdown
 3. **Speedrun:** Players complete the game while the timer runs
 4. **Completion:** Timer automatically stops when a player exits through the End portal after defeating the Ender Dragon
-5. **New Run:** Operator runs `/newrun` to save results and prepare for the next run
 
 ## Automatic Features
 
 - **Blindness on Join:** Players automatically receive blindness when joining before a run starts
-- **Timer Display:** Action bar shows elapsed time with milliseconds (MM:SS.mmm or H:MM:SS.mmm format) at the bottom of the screen, updating 10 times per second
+- **Timer Display:** Action bar shows elapsed time with milliseconds at the bottom of the screen, updating 20 times per second (each tick)
 - **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
-- **Auto-Complete Detection:** Run automatically completes when:
-  - The Ender Dragon is defeated
-  - A player teleports through the End portal back to the Overworld
+- **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports
+  through the End portal back to the Overworld (after the credits screen)
 - **Run Tracking:** All runs are logged to `speedruns.txt` with:
   - Date and time
   - Player names
@@ -102,18 +101,25 @@ Splits are recorded automatically while a run is **RUNNING**. Each split is:
 
 ## Installation
 
-1. Install Fabric Loader for Minecraft 1.21.11
+1. Install Fabric Loader
 2. Install Fabric API
 3. Place the mod JAR in your `mods` folder
-4. Start the server
 
 ## Building
+
+The built JAR will be in `build/libs/`
+
+### on Windows
+
+```powershell
+.\gradlew.bat build
+```
+
+### on Linux
 
 ```bash
 ./gradlew build
 ```
-
-The built JAR will be in `build/libs/`
 
 ## Requirements
 
@@ -124,4 +130,4 @@ The built JAR will be in `build/libs/`
 
 ## License
 
-CC0-1.0
+MIT
