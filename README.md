@@ -68,6 +68,7 @@ clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
 
 - **Blindness on Join:** Players automatically receive blindness when joining before a run starts
 - **Timer Display:** Action bar shows elapsed time with milliseconds (MM:SS.mmm or H:MM:SS.mmm format) at the bottom of the screen, updating 10 times per second
+- **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
 - **Auto-Complete Detection:** Run automatically completes when:
   - The Ender Dragon is defeated
   - A player teleports through the End portal back to the Overworld
@@ -76,6 +77,25 @@ clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
   - Player names
   - Final time (formatted as HH:MM:SS or MM:SS)
   - Completion status
+  - Splits (when recorded)
+
+## Splits
+
+Splits are recorded automatically while a run is **RUNNING**. Each split is:
+
+- Broadcast to all players as a chat message
+- Added to a sidebar scoreboard titled **Speedrun Splits**
+- Reflected next to the timer as the **latest split** in the action bar
+- Saved under a **Splits:** section in `speedruns.txt` when the run is saved
+
+### Current split list
+
+- **First Iron:** Get the "Acquire Hardware" advancement (smelt/obtain an iron ingot)
+- **Entered Nether:** First time a player enters the Nether during the run
+- **First Blaze Kill:** First blaze killed by a player during the run
+- **First Ender Eye:** First time an Eye of Ender is crafted
+- **Stronghold Found:** Get the "Eye Spy" advancement (enter a stronghold)
+- **Entered End:** First time a player enters the End during the run
 
 ## Installation
 
