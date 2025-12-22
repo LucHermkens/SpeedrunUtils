@@ -44,7 +44,15 @@ jobs:
         run: |
           set -euo pipefail
 
-          SHORT_SHA="$(git rev-parse --short HEAD)"
+          MOD_VERSION="$(awk -F= '$1=="mod_version"{print $2}' gradle.properties | tr -d '\r' | tail -n 1)"
+          if [ -z "${MOD_VERSION}" ]; then
+            MOD_VERSION="unknown"
+          fi
+          MINECRAFT_VERSION="$(awk -F= '$1=="minecraft_version"{print $2}' gradle.properties | tr -d '\r' | tail -n 1)"
+          if [ -z "${MINECRAFT_VERSION}" ]; then
+            MINECRAFT_VERSION="unknown"
+          fi
+          RELEASE_NAME="SpeedrunUtils ${MOD_VERSION} for Minecraft ${MINECRAFT_VERSION} Fabric"
 
           # If there are no tags yet, fall back to full history.
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
@@ -56,10 +64,14 @@ jobs:
           fi
 
           {
-            echo "short_sha=${SHORT_SHA}"
-            echo "tag_name=${SHORT_SHA}"
-            echo "release_name=${SHORT_SHA}"
+            echo "mod_version=${MOD_VERSION}"
+            echo "minecraft_version=${MINECRAFT_VERSION}"
+            echo "tag_name=${MOD_VERSION}-${MINECRAFT_VERSION}-fabric"
+            echo "release_name=${RELEASE_NAME}"
             echo "release_body<<__REL_BODY__"
+            echo "Mod Version: ${MOD_VERSION}"
+            echo "Minecraft Version: ${MINECRAFT_VERSION}"
+            echo ""
             if [ -n "${LAST_TAG}" ]; then
               echo "Commits since ${LAST_TAG}:"
             else
