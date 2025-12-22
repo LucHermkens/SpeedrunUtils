@@ -4,25 +4,66 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-      - name: Setup JDK
-        uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'microsoft'
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: Build
+          fetch-depth: 0
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build with Gradle
         run: ./gradlew build
+
       - name: Capture build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
           path: build/libs/
+
+      - name: Prepare release info
+        id: rel
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SHORT_SHA="$(git rev-parse --short HEAD)"
+
+          # If there are no tags yet, fall back to full history.
+          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            LAST_TAG="$(git describe --tags --abbrev=0)"
+            RANGE="${LAST_TAG}..HEAD"
+          else
+            LAST_TAG=""
+            RANGE="HEAD"
+          fi
+
+          {
+            echo "short_sha=${SHORT_SHA}"
+            echo "tag_name=${SHORT_SHA}"
+            echo "release_name=${SHORT_SHA}"
+            echo "release_body<<'EOF'"
+            if [ -n "${LAST_TAG}" ]; then
+              echo "Commits since ${LAST_TAG}:"
+            else
+              echo "Commits:"
+            fi
+            git log ${RANGE} --no-merges --pretty=format:'- %s (%h)' || true
+            echo ""
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.rel.outputs.tag_name }}
+          name: ${{ steps.rel.outputs.release_name }}
+          body: ${{ steps.rel.outputs.release_body }}
