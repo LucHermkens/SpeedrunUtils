@@ -131,10 +131,10 @@ jobs:
             echo ""
             if [ -n "${LAST_TAG}" ]; then
               echo "Commits since ${LAST_TAG}:"
+              git log "${RANGE}" --no-merges --pretty=format:'- %s (%h)' || true
             else
-              echo "Commits:"
+              echo "First release"
             fi
-            git log "${RANGE}" --no-merges --pretty=format:'- %s (%h)' || true
             echo ""
             echo "__REL_BODY__"
           } >> "$GITHUB_OUTPUT"
