@@ -9,25 +9,18 @@
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/LucHermkens/SpeedrunUtils"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/speedrunutils/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
 			"nl.luchermkens.speedrunutils.SpeedrunUtils"
-		],
-		"client": [
-			"nl.luchermkens.speedrunutils.SpeedrunUtilsClient"
 		]
 	},
 	"mixins": [
-		"speedrunutils.mixins.json",
-		{
-			"config": "speedrunutils.client.mixins.json",
-			"environment": "client"
-		}
+		"speedrunutils.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.3",

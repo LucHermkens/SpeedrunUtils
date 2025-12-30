@@ -8,7 +8,7 @@ A Minecraft Fabric mod for managing speedruns with built-in timer, blindness mec
 > **Note:** This mod is still in development and its documentation is AI-generated.
 
 <!--
-clear; dockerr stop minecraft; rm -rf /services/volumes/minecraft/world; sudo truncate -s 0 "/var/lib/docker/containers/$(docker inspect -f '{{.Id}}' minecraft)/local-logs/container.log"; dockerr up -d minecraft; docker logs -f minecraft
+clear; dockerr kill minecraft; rm -rf /services/volumes/minecraft/world; sudo truncate -s 0 "/var/lib/docker/containers/$(docker inspect -f '{{.Id}}' minecraft)/local-logs/container.log"; dockerr up -d minecraft; docker logs -f minecraft
  -->
 
 ## Preview

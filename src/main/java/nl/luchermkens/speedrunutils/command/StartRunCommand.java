@@ -58,4 +58,3 @@ public class StartRunCommand {
         return 1;
     }
 }
-

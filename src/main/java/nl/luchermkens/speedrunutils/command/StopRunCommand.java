@@ -37,5 +37,3 @@ public class StopRunCommand {
         return 1;
     }
 }
-
-

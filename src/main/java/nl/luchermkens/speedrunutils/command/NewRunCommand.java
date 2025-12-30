@@ -71,4 +71,3 @@ public class NewRunCommand {
         return 1;
     }
 }
-
