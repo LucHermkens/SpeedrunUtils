@@ -5,37 +5,36 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import nl.luchermkens.speedrunutils.RunStateManager;
 
-public class PauseRunCommand {
+public class ResumeRunCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("pauserun")
-            .executes(PauseRunCommand::execute));
+        dispatcher.register(CommandManager.literal("resumerun")
+            .executes(ResumeRunCommand::execute));
     }
 
     private static int execute(CommandContext<ServerCommandSource> context) {
         RunStateManager manager = RunStateManager.getInstance();
 
-        if (manager.getState() == RunStateManager.RunState.RUNNING) {
-            manager.pauseRun();
+        if (manager.getState() == RunStateManager.RunState.PAUSED) {
+            manager.resumeRun();
 
-            // Freeze time
-            manager.freezeTime(context.getSource().getServer());
+            // Unfreeze time
+            manager.unfreezeTime(context.getSource().getServer());
 
-            // Apply blindness to all players
+            // Remove blindness from all players
             for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
-                manager.applyBlindness(player);
+                manager.removeBlindness(player);
             }
 
             context.getSource().getServer().getPlayerManager().broadcast(
-                Text.literal("§eRun paused! Timer stopped."),
+                Text.literal("§aRun resumed! Timer continuing."),
                 false
             );
             return 1;
-        } else if (manager.getState() == RunStateManager.RunState.PAUSED) {
-            context.getSource().sendError(Text.literal("Run already paused!"));
+        } else if (manager.getState() == RunStateManager.RunState.RUNNING) {
+            context.getSource().sendError(Text.literal("Run is already running!"));
             return 0;
         } else {
             context.getSource().sendError(Text.literal("No run in progress!"));

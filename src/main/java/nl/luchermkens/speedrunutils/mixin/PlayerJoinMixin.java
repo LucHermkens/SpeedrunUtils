@@ -20,12 +20,14 @@ public class PlayerJoinMixin {
         // Track player name
         manager.addPlayerName(player.getName().getString());
 
-        // Apply blindness if run hasn't started yet
+        // Apply blindness and ensure time is frozen if run hasn't started yet
         if (manager.getState() == RunStateManager.RunState.NOT_STARTED) {
             manager.applyBlindness(player);
+            manager.freezeTime(player.getEntityWorld().getServer());
             player.sendMessage(Text.literal("§eWaiting for someone to run §6/startrun§e..."), false);
         } else if (manager.getState() == RunStateManager.RunState.PAUSED) {
             manager.applyBlindness(player);
+            manager.freezeTime(player.getEntityWorld().getServer());
             player.sendMessage(Text.literal("§eRun is currently paused."), false);
         }
     }

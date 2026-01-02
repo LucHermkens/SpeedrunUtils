@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import nl.luchermkens.speedrunutils.command.StartRunCommand;
 import nl.luchermkens.speedrunutils.command.PauseRunCommand;
+import nl.luchermkens.speedrunutils.command.ResumeRunCommand;
 import nl.luchermkens.speedrunutils.command.NewRunCommand;
 import nl.luchermkens.speedrunutils.command.StopRunCommand;
 
@@ -36,16 +37,18 @@ public class SpeedrunUtils implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			StartRunCommand.register(dispatcher);
 			PauseRunCommand.register(dispatcher);
+			ResumeRunCommand.register(dispatcher);
 			NewRunCommand.register(dispatcher);
 			StopRunCommand.register(dispatcher);
 		});
 
-		// Update timer every tick
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
-			RunStateManager manager = RunStateManager.getInstance();
-			manager.updateTimer(server);
-			manager.updateAggregateItemSplits(server);
-		});
+        // Update timer every tick
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            RunStateManager manager = RunStateManager.getInstance();
+            manager.updateTimer(server);
+            manager.updateAggregateItemSplits(server);
+            manager.enforcePlayerFreeze(server);
+        });
 
 		// Listen for entity deaths (for blaze kill detection)
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {

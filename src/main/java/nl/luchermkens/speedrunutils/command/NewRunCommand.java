@@ -35,6 +35,9 @@ public class NewRunCommand {
         // Reset the run state
         manager.reset();
 
+        // Freeze time until run starts
+        manager.freezeTime(context.getSource().getServer());
+
         // Apply blindness to all current players
         for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
             manager.applyBlindness(player);

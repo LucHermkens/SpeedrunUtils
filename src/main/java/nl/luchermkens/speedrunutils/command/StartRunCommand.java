@@ -44,6 +44,9 @@ public class StartRunCommand {
                 context.getSource().getServer().execute(() -> {
                     manager.startRun(context.getSource().getServer());
 
+                    // Unfreeze time when run starts
+                    manager.unfreezeTime(context.getSource().getServer());
+
                     for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
                         manager.removeBlindness(player);
                         player.sendMessage(Text.literal("§aGO! Timer started!"), true);

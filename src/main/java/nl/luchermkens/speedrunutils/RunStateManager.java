@@ -2,6 +2,7 @@ package nl.luchermkens.speedrunutils;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.scoreboard.*;
 import net.minecraft.scoreboard.number.BlankNumberFormat;
+import net.minecraft.world.rule.GameRules;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class RunStateManager {
     private static RunStateManager instance;
@@ -38,6 +42,13 @@ public class RunStateManager {
     private Map<Split, Long> splits = new LinkedHashMap<>();
     private ScoreboardObjective splitsObjective = null;
     private long lastAggregateItemCheckMs = 0;
+
+    // Player position tracking for complete freeze
+    private Map<UUID, double[]> frozenPositions = new HashMap<>();
+
+    // Store previous game rule values for restoration
+    private int previousRandomTickSpeed = 3;
+    private int previousFireSpreadRadius = 128;
 
     public enum Split {
         IRON_RETRIEVED("First Iron"),
@@ -260,6 +271,138 @@ public class RunStateManager {
 
     public void removeBlindness(ServerPlayerEntity player) {
         player.removeStatusEffect(StatusEffects.BLINDNESS);
+    }
+
+    /**
+     * Freezes time in all worlds by disabling time advancement, random ticks,
+     * weather changes, fire spread, mob spawning, and other dynamic world changes.
+     */
+    public void freezeTime(MinecraftServer server) {
+        // Store current game rule values from overworld before freezing
+        ServerWorld overworld = server.getOverworld();
+        previousRandomTickSpeed = overworld.getGameRules().getValue(GameRules.RANDOM_TICK_SPEED);
+        previousFireSpreadRadius = overworld.getGameRules().getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER);
+
+        for (ServerWorld world : server.getWorlds()) {
+            world.getGameRules().setValue(GameRules.ADVANCE_TIME, false, server);
+            world.getGameRules().setValue(GameRules.ADVANCE_WEATHER, false, server);
+            world.getGameRules().setValue(GameRules.RANDOM_TICK_SPEED, 0, server);
+            world.getGameRules().setValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, 0, server);
+            world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, false, server);
+        }
+
+        // Store player positions for complete freeze
+        frozenPositions.clear();
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            frozenPositions.put(player.getUuid(), new double[]{
+                player.getX(), player.getY(), player.getZ(),
+                player.getYaw(), player.getPitch()
+            });
+
+            // Apply extreme slowness and jump boost to prevent movement
+            player.addStatusEffect(new StatusEffectInstance(
+                StatusEffects.SLOWNESS,
+                999999,
+                255,
+                false,
+                false,
+                false
+            ));
+            player.addStatusEffect(new StatusEffectInstance(
+                StatusEffects.JUMP_BOOST,
+                999999,
+                -128,
+                false,
+                false,
+                false
+            ));
+            player.addStatusEffect(new StatusEffectInstance(
+                StatusEffects.RESISTANCE,
+                999999,
+                255,
+                false,
+                false,
+                false
+            ));
+        }
+    }
+
+    /**
+     * Unfreezes time in all worlds by enabling time advancement, weather,
+     * and restoring all dynamic world changes.
+     */
+    public void unfreezeTime(MinecraftServer server) {
+        for (ServerWorld world : server.getWorlds()) {
+            world.getGameRules().setValue(GameRules.ADVANCE_TIME, true, server);
+            world.getGameRules().setValue(GameRules.ADVANCE_WEATHER, true, server);
+            world.getGameRules().setValue(GameRules.RANDOM_TICK_SPEED, previousRandomTickSpeed, server);
+            world.getGameRules().setValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, previousFireSpreadRadius, server);
+            world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, true, server);
+        }
+
+        // Remove freeze effects from all players
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            player.removeStatusEffect(StatusEffects.SLOWNESS);
+            player.removeStatusEffect(StatusEffects.JUMP_BOOST);
+            player.removeStatusEffect(StatusEffects.RESISTANCE);
+        }
+
+        frozenPositions.clear();
+    }
+
+    /**
+     * Enforces player freeze by teleporting them back to their frozen position.
+     */
+    public void enforcePlayerFreeze(MinecraftServer server) {
+        if (state != RunState.NOT_STARTED && state != RunState.PAUSED) return;
+
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            double[] pos = frozenPositions.get(player.getUuid());
+            if (pos != null) {
+                double dx = Math.abs(player.getX() - pos[0]);
+                double dy = Math.abs(player.getY() - pos[1]);
+                double dz = Math.abs(player.getZ() - pos[2]);
+
+                // If player moved significantly, teleport them back
+                if (dx > 0.01 || dy > 0.01 || dz > 0.01) {
+                    player.teleport(pos[0], pos[1], pos[2], true);
+                    player.setYaw((float) pos[3]);
+                    player.setPitch((float) pos[4]);
+                }
+            } else {
+                // New player joined during freeze, store their position
+                frozenPositions.put(player.getUuid(), new double[]{
+                    player.getX(), player.getY(), player.getZ(),
+                    player.getYaw(), player.getPitch()
+                });
+
+                // Apply freeze effects
+                player.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.SLOWNESS,
+                    999999,
+                    255,
+                    false,
+                    false,
+                    false
+                ));
+                player.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.JUMP_BOOST,
+                    999999,
+                    -128,
+                    false,
+                    false,
+                    false
+                ));
+                player.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.RESISTANCE,
+                    999999,
+                    255,
+                    false,
+                    false,
+                    false
+                ));
+            }
+        }
     }
 
     public Set<String> getPlayerNames() {

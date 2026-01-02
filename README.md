@@ -29,20 +29,29 @@ clear; dockerr kill minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
   - Can only be run once per speedrun (before the run starts)
   - Displays a 3-second countdown to all players
   - Removes blindness effect from all players
+  - Unfreezes time
   - Starts the scoreboard timer
   - Plays sound effects for countdown and start
 
 #### `/pauserun`
 
 - **Permission Level:** 0 (all players)
-- **Description:** Pauses or resumes the current speedrun
+- **Description:** Pauses the current speedrun
 - **Behavior:**
-  - When pausing:
-    - Stops the timer
-    - Applies blindness to all players
-  - When resuming:
-    - Continues the timer
-    - Removes blindness from all players
+  - Stops the timer
+  - Freezes time
+  - Applies blindness to all players
+  - Shows "Run already paused!" if the run is already paused
+
+#### `/resumerun`
+
+- **Permission Level:** 0 (all players)
+- **Description:** Resumes a paused speedrun
+- **Behavior:**
+  - Continues the timer
+  - Unfreezes time
+  - Removes blindness from all players
+  - Shows an error message if the run is not paused
 
 #### `/stoprun`
 
@@ -51,8 +60,9 @@ clear; dockerr kill minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
 - **Behavior:**
   - Stops the run (if one is active)
   - Clears the timer
+  - Unfreezes time
   - Removes blindness from all players (in case the run was paused)
-  - Broadcasts: “Run stopped. Timer cleared.”
+  - Broadcasts: "Run stopped. Timer cleared."
 
 #### `/newrun`
 
@@ -63,6 +73,7 @@ clear; dockerr kill minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
   - Saves the current run data to `speedruns.txt` in the server root
   - Records: timestamp, player names, time, and completion status
   - Resets the run state
+  - Freezes time
   - Applies blindness to all players
   - Notifies players about server restart for world regeneration
 
@@ -75,7 +86,8 @@ clear; dockerr kill minecraft; rm -rf /services/volumes/minecraft/world; sudo tr
 
 ## Automatic Features
 
-- **Blindness on Join:** Players automatically receive blindness when joining before a run starts
+- **Blindness on Join:** Players automatically receive blindness when joining before a run starts or during a pause
+- **Time Freezing:** Time is frozen before the run starts and during pauses, and unfrozen when the run starts/resumes
 - **Timer Display:** Action bar shows elapsed time with milliseconds at the bottom of the screen, updating 20 times per second (each tick)
 - **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
 - **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports

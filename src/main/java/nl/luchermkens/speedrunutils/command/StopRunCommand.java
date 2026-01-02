@@ -24,6 +24,9 @@ public class StopRunCommand {
 
         manager.stopRun(context.getSource().getServer());
 
+        // Unfreeze time
+        manager.unfreezeTime(context.getSource().getServer());
+
         // Ensure players aren't left blind if stopping from a paused run
         for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
             manager.removeBlindness(player);
