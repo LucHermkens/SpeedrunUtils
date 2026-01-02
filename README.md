@@ -93,14 +93,14 @@ cp .\build\libs\speedrunutils-1.1.0.jar ..\..\..\AppData\Roaming\ModrinthApp\pro
 
 - **Blindness on Join:** Players automatically receive blindness when joining before a run starts or during a pause
 - **Time Freezing:** Time is frozen before the run starts and during pauses, and unfrozen when the run starts/resumes
-- **Timer Display:** Action bar shows elapsed time with milliseconds at the bottom of the screen, updating 20 times per second (each tick)
+- **Timer Display:** Action bar shows elapsed time at the bottom of the screen, updating 20 times per second (each tick)
 - **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
 - **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports
   through the End portal back to the Overworld (after the credits screen)
 - **Run Tracking:** All runs are logged to `speedruns.txt` with:
   - Date and time
   - Player names
-  - Final time (formatted as HH:MM:SS or MM:SS)
+  - Final time (formatted as HH:MM:SS.mmm or MM:SS.mmm)
   - Completion status
   - Splits (when recorded)
 

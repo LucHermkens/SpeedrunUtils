@@ -184,7 +184,7 @@ public class RunStateManager {
 
     public void updateTimer(MinecraftServer server) {
         if (state == RunState.RUNNING) {
-            StringBuilder timeDisplay = new StringBuilder("§6Timer: §e" + getFormattedTimeWithMillis());
+            StringBuilder timeDisplay = new StringBuilder("§6Timer: §e" + getFormattedTime());
 
             // Add latest split if available
             if (!splits.isEmpty()) {
@@ -414,19 +414,6 @@ public class RunStateManager {
     }
 
     public String getFormattedTime() {
-        long totalSeconds = getElapsedTime() / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-
-        if (hours > 0) {
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format("%d:%02d", minutes, seconds);
-        }
-    }
-
-    public String getFormattedTimeWithMillis() {
         long totalMillis = getElapsedTime();
         long hours = totalMillis / 3600000;
         long minutes = (totalMillis % 3600000) / 60000;
