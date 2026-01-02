@@ -2,7 +2,7 @@
 
 If any files have been changed, run `.\gradlew.bat build` on Windows or `./gradlew build` on Linux to verify a successful build.
 
-Always update the `README.md` file with the latest changes if necessary.
+Always update the `README.md` file with the latest changes if necessary, and apply those changes to the `DESCRIPTION.md` file as well.
 
 The project is a Minecraft 1.21.11 Fabric mod.
 The project is a mod for speedruns.
