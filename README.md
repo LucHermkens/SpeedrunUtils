@@ -145,6 +145,6 @@ The built JAR will be in `build/libs/`
 ## Requirements
 
 - Minecraft 1.21.11
-- Fabric Loader >= 0.18.3
+- Fabric Loader >= 0.18.4
 - Fabric API
 - Java 21+
