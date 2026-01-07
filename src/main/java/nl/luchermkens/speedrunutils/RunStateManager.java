@@ -1,6 +1,8 @@
 package nl.luchermkens.speedrunutils;
 
+import com.mojang.brigadier.ParseResults;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -47,7 +49,6 @@ public class RunStateManager {
     private Map<UUID, double[]> frozenPositions = new HashMap<>();
 
     // Store previous game rule values for restoration
-    private int previousRandomTickSpeed = 3;
     private int previousFireSpreadRadius = 128;
 
     public enum Split {
@@ -281,21 +282,28 @@ public class RunStateManager {
     }
 
     /**
-     * Freezes time in all worlds by disabling time advancement, random ticks,
+     * Freezes time in all worlds by disabling time advancement,
      * weather changes, fire spread, mob spawning, and other dynamic world changes.
      */
     public void freezeTime(MinecraftServer server) {
         // Store current game rule values from overworld before freezing
         ServerWorld overworld = server.getOverworld();
-        previousRandomTickSpeed = overworld.getGameRules().getValue(GameRules.RANDOM_TICK_SPEED);
         previousFireSpreadRadius = overworld.getGameRules().getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER) | 128;
 
         for (ServerWorld world : server.getWorlds()) {
             world.getGameRules().setValue(GameRules.ADVANCE_TIME, false, server);
             world.getGameRules().setValue(GameRules.ADVANCE_WEATHER, false, server);
-            world.getGameRules().setValue(GameRules.RANDOM_TICK_SPEED, 0, server);
             world.getGameRules().setValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, 0, server);
             world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, false, server);
+        }
+
+        // Execute /tick freeze command
+        try {
+            ServerCommandSource commandSource = server.getCommandSource();
+            ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick freeze", commandSource);
+            server.getCommandManager().getDispatcher().execute(parseResults);
+        } catch (Exception e) {
+            SpeedrunUtils.LOGGER.warn("Failed to execute /tick freeze command: {}", e.getMessage());
         }
 
         // Store player positions for complete freeze
@@ -339,10 +347,18 @@ public class RunStateManager {
      * and restoring all dynamic world changes.
      */
     public void unfreezeTime(MinecraftServer server) {
+        // Execute /tick unfreeze command
+        try {
+            ServerCommandSource commandSource = server.getCommandSource();
+            ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick unfreeze", commandSource);
+            server.getCommandManager().getDispatcher().execute(parseResults);
+        } catch (Exception e) {
+            SpeedrunUtils.LOGGER.warn("Failed to execute /tick unfreeze command: {}", e.getMessage());
+        }
+
         for (ServerWorld world : server.getWorlds()) {
             world.getGameRules().setValue(GameRules.ADVANCE_TIME, true, server);
             world.getGameRules().setValue(GameRules.ADVANCE_WEATHER, true, server);
-            world.getGameRules().setValue(GameRules.RANDOM_TICK_SPEED, previousRandomTickSpeed, server);
             world.getGameRules().setValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, previousFireSpreadRadius, server);
             world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, true, server);
         }
