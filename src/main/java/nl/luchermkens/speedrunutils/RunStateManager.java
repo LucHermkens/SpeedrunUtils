@@ -485,9 +485,17 @@ public class RunStateManager {
     private void setupScoreboard(MinecraftServer server) {
         Scoreboard scoreboard = server.getScoreboard();
 
-        // Remove old objective if it exists
-        if (splitsObjective != null) {
-            scoreboard.removeObjective(splitsObjective);
+        // Remove old objective if it exists (check both cached reference and by name)
+        ScoreboardObjective existingObjective = splitsObjective;
+        if (existingObjective == null) {
+            existingObjective = scoreboard.getNullableObjective("speedrun_splits");
+        }
+
+        if (existingObjective != null) {
+            if (scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR) == existingObjective) {
+                scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
+            }
+            scoreboard.removeObjective(existingObjective);
         }
 
         // Create new objective
