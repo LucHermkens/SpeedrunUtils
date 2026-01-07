@@ -288,7 +288,7 @@ public class RunStateManager {
         // Store current game rule values from overworld before freezing
         ServerWorld overworld = server.getOverworld();
         previousRandomTickSpeed = overworld.getGameRules().getValue(GameRules.RANDOM_TICK_SPEED);
-        previousFireSpreadRadius = overworld.getGameRules().getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER);
+        previousFireSpreadRadius = overworld.getGameRules().getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER) | 128;
 
         for (ServerWorld world : server.getWorlds()) {
             world.getGameRules().setValue(GameRules.ADVANCE_TIME, false, server);
