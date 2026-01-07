@@ -54,8 +54,9 @@ public class RunStateManager {
         IRON_RETRIEVED("First Iron"),
         ENTERED_NETHER("Entered Nether"),
         ENTERED_NETHER_FORTRESS("Entered Nether Fortress"),
-        FIRST_BLAZE_KILLED("First Blaze Kill"),
+        FIRST_BLAZE_ROD("First Blaze Rod"),
         BLAZE_RODS_DONE("Blaze Rods Done"),
+        FIRST_ENDER_PEARL("First Ender Pearl"),
         ENDER_PEARLS_DONE("Ender Pearls Done"),
         CRAFTED_FIRST_ENDER_EYE("First Ender Eye"),
         FOUND_STRONGHOLD("Stronghold Found"),
@@ -229,8 +230,14 @@ public class RunStateManager {
             totalEnderPearls += countItemEverywhere(player, Items.ENDER_PEARL);
         }
 
+        if (totalBlazeRods >= 1 && !hasSplit(Split.FIRST_BLAZE_ROD)) {
+            recordSplit(Split.FIRST_BLAZE_ROD, server);
+        }
         if (totalBlazeRods >= REQUIRED_BLAZE_RODS && !hasSplit(Split.BLAZE_RODS_DONE)) {
             recordSplit(Split.BLAZE_RODS_DONE, server);
+        }
+        if (totalEnderPearls >= 1 && !hasSplit(Split.FIRST_ENDER_PEARL)) {
+            recordSplit(Split.FIRST_ENDER_PEARL, server);
         }
         if (totalEnderPearls >= REQUIRED_ENDER_PEARLS && !hasSplit(Split.ENDER_PEARLS_DONE)) {
             recordSplit(Split.ENDER_PEARLS_DONE, server);

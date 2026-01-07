@@ -3,10 +3,8 @@ package nl.luchermkens.speedrunutils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,23 +47,6 @@ public class SpeedrunUtils implements ModInitializer {
             manager.updateAggregateItemSplits(server);
             manager.enforcePlayerFreeze(server);
         });
-
-		// Listen for entity deaths (for blaze kill detection)
-		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-			if (entity instanceof BlazeEntity && !entity.getEntityWorld().isClient()) {
-				RunStateManager manager = RunStateManager.getInstance();
-
-				if (manager.getState() == RunStateManager.RunState.RUNNING &&
-					!manager.hasSplit(RunStateManager.Split.FIRST_BLAZE_KILLED)) {
-
-					// Check if killed by a player
-					if (damageSource.getAttacker() instanceof ServerPlayerEntity) {
-						manager.recordSplit(RunStateManager.Split.FIRST_BLAZE_KILLED,
-							entity.getEntityWorld().getServer());
-					}
-				}
-			}
-		});
 
 		// Listen for dimension changes (including end portal)
 		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {

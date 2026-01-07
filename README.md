@@ -118,8 +118,9 @@ Splits are recorded automatically while a run is **RUNNING**. Each split is:
 - **First Iron:** Get the "Acquire Hardware" advancement (smelt/obtain an iron ingot)
 - **Entered Nether:** First time a player enters the Nether during the run
 - **Entered Nether Fortress:** Get the "A Terrible Fortress" advancement (enter a nether fortress)
-- **First Blaze Kill:** First blaze killed by a player during the run
+- **First Blaze Rod:** First blaze rod retrieved by any player during the run
 - **Blaze Rods Done:** Server-wide total blaze rods across all online players reaches **7**
+- **First Ender Pearl:** First ender pearl retrieved by any player during the run
 - **Ender Pearls Done:** Server-wide total ender pearls across all online players reaches **14**
 - **First Ender Eye:** First time an Eye of Ender is crafted
 - **Stronghold Found:** Get the "Eye Spy" advancement (enter a stronghold)
