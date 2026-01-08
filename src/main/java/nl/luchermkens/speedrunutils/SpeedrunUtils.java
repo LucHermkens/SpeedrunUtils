@@ -10,12 +10,11 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
-import nl.luchermkens.speedrunutils.command.StartRunCommand;
+import nl.luchermkens.speedrunutils.command.NewRunCommand;
 import nl.luchermkens.speedrunutils.command.PauseRunCommand;
 import nl.luchermkens.speedrunutils.command.ResumeRunCommand;
-import nl.luchermkens.speedrunutils.command.NewRunCommand;
+import nl.luchermkens.speedrunutils.command.StartRunCommand;
 import nl.luchermkens.speedrunutils.command.StopRunCommand;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

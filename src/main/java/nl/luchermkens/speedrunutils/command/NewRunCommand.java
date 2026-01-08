@@ -2,18 +2,17 @@ package nl.luchermkens.speedrunutils.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import nl.luchermkens.speedrunutils.RunStateManager;
 import nl.luchermkens.speedrunutils.SpeedrunUtils;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class NewRunCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -1,7 +1,7 @@
 package nl.luchermkens.speedrunutils.mixin;
 
-import nl.luchermkens.speedrunutils.FreezeManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import nl.luchermkens.speedrunutils.FreezeManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

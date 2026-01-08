@@ -1,7 +1,6 @@
 package nl.luchermkens.speedrunutils.mixin;
 
 import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import nl.luchermkens.speedrunutils.RunStateManager;
