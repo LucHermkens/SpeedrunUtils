@@ -297,48 +297,23 @@ public class RunStateManager {
             world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, false, server);
         }
 
-        // Execute /tick freeze command
+        // Execute /tick freeze command (suppress feedback by temporarily disabling sendCommandFeedback)
+        boolean previousFeedback = overworld.getGameRules().getValue(GameRules.SEND_COMMAND_FEEDBACK);
         try {
+            overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, false, server);
             ServerCommandSource commandSource = server.getCommandSource();
             ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick freeze", commandSource);
             server.getCommandManager().getDispatcher().execute(parseResults);
         } catch (Exception e) {
             SpeedrunUtils.LOGGER.warn("Failed to execute /tick freeze command: {}", e.getMessage());
+        } finally {
+            overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, previousFeedback, server);
         }
 
-        // Store player positions for complete freeze
+        // Freeze all players in place using the new FreezeManager
         frozenPositions.clear();
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            frozenPositions.put(player.getUuid(), new double[]{
-                player.getX(), player.getY(), player.getZ(),
-                player.getYaw(), player.getPitch()
-            });
-
-            // Apply extreme slowness and jump boost to prevent movement
-            player.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.SLOWNESS,
-                999999,
-                255,
-                false,
-                false,
-                false
-            ));
-            player.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.JUMP_BOOST,
-                999999,
-                -128,
-                false,
-                false,
-                false
-            ));
-            player.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.RESISTANCE,
-                999999,
-                255,
-                false,
-                false,
-                false
-            ));
+            FreezeManager.freeze(player);
         }
     }
 
@@ -347,13 +322,18 @@ public class RunStateManager {
      * and restoring all dynamic world changes.
      */
     public void unfreezeTime(MinecraftServer server) {
-        // Execute /tick unfreeze command
+        // Execute /tick unfreeze command (suppress feedback by temporarily disabling sendCommandFeedback)
+        ServerWorld overworld = server.getOverworld();
+        boolean previousFeedback = overworld.getGameRules().getValue(GameRules.SEND_COMMAND_FEEDBACK);
         try {
+            overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, false, server);
             ServerCommandSource commandSource = server.getCommandSource();
             ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick unfreeze", commandSource);
             server.getCommandManager().getDispatcher().execute(parseResults);
         } catch (Exception e) {
             SpeedrunUtils.LOGGER.warn("Failed to execute /tick unfreeze command: {}", e.getMessage());
+        } finally {
+            overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, previousFeedback, server);
         }
 
         for (ServerWorld world : server.getWorlds()) {
@@ -363,67 +343,25 @@ public class RunStateManager {
             world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, true, server);
         }
 
-        // Remove freeze effects from all players
+        // Unfreeze all players using the new FreezeManager
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            player.removeStatusEffect(StatusEffects.SLOWNESS);
-            player.removeStatusEffect(StatusEffects.JUMP_BOOST);
-            player.removeStatusEffect(StatusEffects.RESISTANCE);
+            FreezeManager.unfreeze(player);
         }
 
         frozenPositions.clear();
     }
 
     /**
-     * Enforces player freeze by teleporting them back to their frozen position.
+     * Enforces player freeze by freezing any new players who join during pause/not-started.
+     * The main freeze enforcement is now handled by FreezeManager.tick() which is called from SpeedrunUtils.
      */
     public void enforcePlayerFreeze(MinecraftServer server) {
         if (state != RunState.NOT_STARTED && state != RunState.PAUSED) return;
 
+        // Freeze any new players who join during pause/not-started
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            double[] pos = frozenPositions.get(player.getUuid());
-            if (pos != null) {
-                double dx = Math.abs(player.getX() - pos[0]);
-                double dy = Math.abs(player.getY() - pos[1]);
-                double dz = Math.abs(player.getZ() - pos[2]);
-
-                // If player moved significantly, teleport them back
-                if (dx > 0.01 || dy > 0.01 || dz > 0.01) {
-                    player.teleport(pos[0], pos[1], pos[2], true);
-                    player.setYaw((float) pos[3]);
-                    player.setPitch((float) pos[4]);
-                }
-            } else {
-                // New player joined during freeze, store their position
-                frozenPositions.put(player.getUuid(), new double[]{
-                    player.getX(), player.getY(), player.getZ(),
-                    player.getYaw(), player.getPitch()
-                });
-
-                // Apply freeze effects
-                player.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.SLOWNESS,
-                    999999,
-                    255,
-                    false,
-                    false,
-                    false
-                ));
-                player.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.JUMP_BOOST,
-                    999999,
-                    -128,
-                    false,
-                    false,
-                    false
-                ));
-                player.addStatusEffect(new StatusEffectInstance(
-                    StatusEffects.RESISTANCE,
-                    999999,
-                    255,
-                    false,
-                    false,
-                    false
-                ));
+            if (!FreezeManager.isFrozen(player)) {
+                FreezeManager.freeze(player);
             }
         }
     }

@@ -93,6 +93,7 @@ cp .\build\libs\speedrunutils-1.1.0.jar ..\..\..\AppData\Roaming\ModrinthApp\pro
 
 - **Blindness on Join:** Players automatically receive blindness when joining before a run starts or during a pause
 - **Time Freezing:** Time is frozen before the run starts and during pauses, and unfrozen when the run starts/resumes
+- **Player Freezing:** Players are completely frozen in place (movement and interactions) before the run starts and during pauses using packet-based freezing that prevents all client actions including breaking blocks, placing blocks, attacking, and moving
 - **Timer Display:** Action bar shows elapsed time at the bottom of the screen, updating 20 times per second (each tick)
 - **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
 - **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports

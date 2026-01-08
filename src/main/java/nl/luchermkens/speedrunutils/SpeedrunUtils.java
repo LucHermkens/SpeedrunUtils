@@ -46,6 +46,7 @@ public class SpeedrunUtils implements ModInitializer {
             manager.updateTimer(server);
             manager.updateAggregateItemSplits(server);
             manager.enforcePlayerFreeze(server);
+            FreezeManager.tick(server);
         });
 
 		// Listen for dimension changes (including end portal)
