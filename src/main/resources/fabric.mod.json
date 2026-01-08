@@ -1,31 +1,31 @@
 {
-	"schemaVersion": 1,
-	"id": "speedrunutils",
-	"version": "${version}",
-	"name": "SpeedrunUtils",
-	"description": "A comprehensive speedrun mod with timer, blindness mechanics, and run management commands.",
-	"authors": [
-		"luchermkens"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/LucHermkens/SpeedrunUtils"
-	},
-	"license": "MIT",
-	"icon": "assets/speedrunutils/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"nl.luchermkens.speedrunutils.SpeedrunUtils"
-		]
-	},
-	"mixins": [
-		"speedrunutils.mixins.json"
-	],
-	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.11",
-		"java": ">=21",
-		"fabric-api": "*"
-	}
+    "schemaVersion": 1,
+    "id": "speedrunutils",
+    "version": "${version}",
+    "name": "SpeedrunUtils",
+    "description": "A comprehensive speedrun mod with timer, blindness mechanics, and run management commands.",
+    "authors": [
+        "luchermkens"
+    ],
+    "contact": {
+        "homepage": "https://fabricmc.net/",
+        "sources": "https://github.com/LucHermkens/SpeedrunUtils"
+    },
+    "license": "MIT",
+    "icon": "assets/speedrunutils/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "nl.luchermkens.speedrunutils.SpeedrunUtils"
+        ]
+    },
+    "mixins": [
+        "speedrunutils.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.18.4",
+        "minecraft": "~1.21.11",
+        "java": ">=21",
+        "fabric-api": "*"
+    }
 }

@@ -19,25 +19,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SpeedrunUtils implements ModInitializer {
-	public static final String MOD_ID = "speedrunutils";
+    public static final String MOD_ID = "speedrunutils";
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    // This logger is used to write text to the console and the log file.
+    // It is considered best practice to use your mod id as the logger's name.
+    // That way, it's clear which mod wrote info, warnings, and errors.
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	@Override
-	public void onInitialize() {
-		LOGGER.info("Initializing SpeedrunUtils mod...");
+    @Override
+    public void onInitialize() {
+        LOGGER.info("Initializing SpeedrunUtils mod...");
 
-		// Register commands
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			StartRunCommand.register(dispatcher);
-			PauseRunCommand.register(dispatcher);
-			ResumeRunCommand.register(dispatcher);
-			NewRunCommand.register(dispatcher);
-			StopRunCommand.register(dispatcher);
-		});
+        // Register commands
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            StartRunCommand.register(dispatcher);
+            PauseRunCommand.register(dispatcher);
+            ResumeRunCommand.register(dispatcher);
+            NewRunCommand.register(dispatcher);
+            StopRunCommand.register(dispatcher);
+        });
 
         // Update timer every tick
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -48,44 +48,44 @@ public class SpeedrunUtils implements ModInitializer {
             FreezeManager.tick(server);
         });
 
-		// Listen for dimension changes (including end portal)
-		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-			RunStateManager manager = RunStateManager.getInstance();
+        // Listen for dimension changes (including end portal)
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+            RunStateManager manager = RunStateManager.getInstance();
 
-			if (manager.getState() != RunStateManager.RunState.RUNNING) return;
+            if (manager.getState() != RunStateManager.RunState.RUNNING) return;
 
-			// Record splits for dimension changes
-			if (destination.getRegistryKey().equals(World.NETHER) &&
-				!manager.hasSplit(RunStateManager.Split.ENTERED_NETHER)) {
-				manager.recordSplit(RunStateManager.Split.ENTERED_NETHER, destination.getServer());
-			}
+            // Record splits for dimension changes
+            if (destination.getRegistryKey().equals(World.NETHER) &&
+                !manager.hasSplit(RunStateManager.Split.ENTERED_NETHER)) {
+                manager.recordSplit(RunStateManager.Split.ENTERED_NETHER, destination.getServer());
+            }
 
-			if (destination.getRegistryKey().equals(World.END) &&
-				!manager.hasSplit(RunStateManager.Split.ENTERED_END)) {
-				manager.recordSplit(RunStateManager.Split.ENTERED_END, destination.getServer());
-			}
+            if (destination.getRegistryKey().equals(World.END) &&
+                !manager.hasSplit(RunStateManager.Split.ENTERED_END)) {
+                manager.recordSplit(RunStateManager.Split.ENTERED_END, destination.getServer());
+            }
 
-			// Check for run completion
-			if (!manager.isDragonKilled()) return;
+            // Check for run completion
+            if (!manager.isDragonKilled()) return;
 
-			// Check if leaving End to Overworld (completing the run)
-			if (!origin.getRegistryKey().equals(World.END)) return;
-			if (!destination.getRegistryKey().equals(World.OVERWORLD)) return;
+            // Check if leaving End to Overworld (completing the run)
+            if (!origin.getRegistryKey().equals(World.END)) return;
+            if (!destination.getRegistryKey().equals(World.OVERWORLD)) return;
 
-			// Run completed!
-			manager.completeRun();
+            // Run completed!
+            manager.completeRun();
 
-			String time = manager.getFormattedTime();
-			destination.getServer().getPlayerManager().broadcast(Text.literal("§6§l=== RUN COMPLETED ==="), false);
-			destination.getServer().getPlayerManager().broadcast(Text.literal("§aFinal Time: §e" + time), false);
-			destination.getServer().getPlayerManager().broadcast(Text.literal("§6Use §e/newrun §6to start a new speedrun!"), false);
+            String time = manager.getFormattedTime();
+            destination.getServer().getPlayerManager().broadcast(Text.literal("§6§l=== RUN COMPLETED ==="), false);
+            destination.getServer().getPlayerManager().broadcast(Text.literal("§aFinal Time: §e" + time), false);
+            destination.getServer().getPlayerManager().broadcast(Text.literal("§6Use §e/newrun §6to start a new speedrun!"), false);
 
-			// Automatically save the completed run
-			manager.saveRunToFile(destination.getServer());
+            // Automatically save the completed run
+            manager.saveRunToFile(destination.getServer());
 
-			LOGGER.info("Speedrun completed in: {}", time);
-		});
+            LOGGER.info("Speedrun completed in: {}", time);
+        });
 
-		LOGGER.info("SpeedrunUtils mod initialized successfully!");
-	}
+        LOGGER.info("SpeedrunUtils mod initialized successfully!");
+    }
 }
