@@ -14,7 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerManager.class)
 public class PlayerJoinMixin {
     @Inject(at = @At("TAIL"), method = "onPlayerConnect")
-    private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
+    private void onPlayerJoin(
+        ClientConnection connection,
+        ServerPlayerEntity player,
+        ConnectedClientData clientData,
+        CallbackInfo ci
+    ) {
         RunStateManager manager = RunStateManager.getInstance();
 
         // Track player name

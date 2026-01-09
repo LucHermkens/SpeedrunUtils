@@ -37,13 +37,19 @@ public class CraftingResultSlotMixin {
     }
 
     private static void tryRecordSplit(PlayerEntity player, ItemStack stack) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer) || player.getEntityWorld().isClient()) return;
+        if (
+            !(player instanceof ServerPlayerEntity serverPlayer) ||
+            player.getEntityWorld().isClient()
+        ) return;
 
         RunStateManager manager = RunStateManager.getInstance();
         if (manager.getState() != RunStateManager.RunState.RUNNING) return;
 
         if (stack.isOf(Items.ENDER_EYE) && !manager.hasSplit(RunStateManager.Split.CRAFTED_FIRST_ENDER_EYE)) {
-            manager.recordSplit(RunStateManager.Split.CRAFTED_FIRST_ENDER_EYE, serverPlayer.getEntityWorld().getServer());
+            manager.recordSplit(
+                RunStateManager.Split.CRAFTED_FIRST_ENDER_EYE,
+                serverPlayer.getEntityWorld().getServer()
+            );
         }
     }
 }

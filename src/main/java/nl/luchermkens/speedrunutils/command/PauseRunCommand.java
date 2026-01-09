@@ -25,7 +25,10 @@ public class PauseRunCommand {
             manager.freezeTime(context.getSource().getServer());
 
             // Apply blindness to all players
-            for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+            for (
+                ServerPlayerEntity player :
+                context.getSource().getServer().getPlayerManager().getPlayerList()
+            ) {
                 manager.applyBlindness(player);
             }
 

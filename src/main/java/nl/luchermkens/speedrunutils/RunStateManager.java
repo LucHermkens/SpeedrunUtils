@@ -291,7 +291,9 @@ public class RunStateManager {
     public void freezeTime(MinecraftServer server) {
         // Store current game rule values from overworld before freezing
         ServerWorld overworld = server.getOverworld();
-        previousFireSpreadRadius = overworld.getGameRules().getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER) | 128;
+        previousFireSpreadRadius = overworld
+            .getGameRules()
+            .getValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER) | 128;
 
         for (ServerWorld world : server.getWorlds()) {
             world.getGameRules().setValue(GameRules.ADVANCE_TIME, false, server);
@@ -305,7 +307,10 @@ public class RunStateManager {
         try {
             overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, false, server);
             ServerCommandSource commandSource = server.getCommandSource();
-            ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick freeze", commandSource);
+            ParseResults<ServerCommandSource> parseResults = server
+                .getCommandManager()
+                .getDispatcher()
+                .parse("tick freeze", commandSource);
             server.getCommandManager().getDispatcher().execute(parseResults);
         } catch (Exception e) {
             SpeedrunUtils.LOGGER.warn("Failed to execute /tick freeze command: {}", e.getMessage());
@@ -331,7 +336,10 @@ public class RunStateManager {
         try {
             overworld.getGameRules().setValue(GameRules.SEND_COMMAND_FEEDBACK, false, server);
             ServerCommandSource commandSource = server.getCommandSource();
-            ParseResults<ServerCommandSource> parseResults = server.getCommandManager().getDispatcher().parse("tick unfreeze", commandSource);
+            ParseResults<ServerCommandSource> parseResults = server
+                .getCommandManager()
+                .getDispatcher()
+                .parse("tick unfreeze", commandSource);
             server.getCommandManager().getDispatcher().execute(parseResults);
         } catch (Exception e) {
             SpeedrunUtils.LOGGER.warn("Failed to execute /tick unfreeze command: {}", e.getMessage());
@@ -342,8 +350,12 @@ public class RunStateManager {
         for (ServerWorld world : server.getWorlds()) {
             world.getGameRules().setValue(GameRules.ADVANCE_TIME, true, server);
             world.getGameRules().setValue(GameRules.ADVANCE_WEATHER, true, server);
-            world.getGameRules().setValue(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, previousFireSpreadRadius, server);
             world.getGameRules().setValue(GameRules.DO_MOB_SPAWNING, true, server);
+            world.getGameRules().setValue(
+                GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER,
+                previousFireSpreadRadius,
+                server
+            );
         }
 
         // Unfreeze all players using the new FreezeManager
@@ -569,7 +581,11 @@ public class RunStateManager {
                 // Broadcast to chat
                 String status = state == RunState.COMPLETED ? "§aCOMPLETED" : "§cINCOMPLETE";
                 server.getPlayerManager().broadcast(
-                    Text.literal("§6[Speedrun] §fSaved run: §e" + getFormattedTime() + " §8(§7" + String.join(", ", getPlayerNames()) + "§8) " + status),
+                    Text.literal(
+                        "§6[Speedrun] §fSaved run: §e" + getFormattedTime() +
+                        " §8(§7" + String.join(", ", getPlayerNames()) + "§8) " +
+                        status
+                    ),
                     false
                 );
             }

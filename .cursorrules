@@ -1,18 +1,45 @@
 # Rules
 
-If any files have been changed, run `.\gradlew.bat build` on Windows or `./gradlew build` on Linux to verify a successful build.
+- The project is a Minecraft 1.21.11 Fabric mod.
 
-Always update the `README.md` file with the latest changes if necessary, and apply those changes to the `DESCRIPTION.md` file as well.
+- The project is a mod for speedruns.
 
-The project is a Minecraft 1.21.11 Fabric mod.
-The project is a mod for speedruns.
+- Assume `/` is the project root when mentioning file paths.
 
-Always use `.getEntityWorld().getServer()` instead of `.getWorld().getServer()` to get the server instance.
+- Whenever changes are made to any files within `/src/main`, or to `/gradle.properties`, `/build.gradle`, or `/settings.gradle`:
 
-Keep the conclusion you write at the end of your response: concise and to the point.
+  Run `.\gradlew.bat build` on Windows or `./gradlew build` on Linux to verify a successful build.
 
-Use the following command:
-`javap -classpath .gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-{cacheid}/{version}/minecraft-common-{cacheid}-{version}.jar -private net.minecraft.scoreboard.ScoreboardObjective`
-to get the decompiled code of the `ScoreboardObjective` class for example if needed.
-Make sure to replace `{cacheid}` and `{version}` with the actual values.
-Cache ID example: `54f2c19a0c` and version example: `1.21.11-net.fabricmc.yarn.1_21_11.1.21.11+build.3-v2`
+  So not when `checkstyle.xml` is updated for example.
+
+- If any `.java` files are changed, or `checkstyle.xml` is updated, run the following command to verify code quality:
+
+  ```powershell
+  java -jar checkstyle-13.0.0-all.jar -c checkstyle.xml src
+  ```
+
+  Or for a specific file:
+
+  ```powershell
+  java -jar checkstyle-13.0.0-all.jar -c checkstyle.xml src\main\java\nl\luchermkens\speedrunutils\SpeedrunUtils.java
+  ```
+
+  ONLY fix the files that are actually affected by the changes you made, ignore the other errors/warnings.
+
+- Always update the `README.md` file with the latest changes if necessary, and apply those changes to the `DESCRIPTION.md` file as well.
+
+- Always use `.getEntityWorld().getServer()` instead of `.getWorld().getServer()` to get the server instance.
+
+- Keep the conclusion you write at the end of your response: concise and to the point.
+
+- Use the following command:
+
+  ```powershell
+  javap -classpath .gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-{cacheid}/{version}/minecraft-common-{cacheid}-{version}.jar -private net.minecraft.scoreboard.ScoreboardObjective
+  ```
+
+  to get the decompiled code of the `ScoreboardObjective` class for example if needed.
+
+  Make sure to replace `{cacheid}` and `{version}` with the actual values.
+
+  Cache ID example: `54f2c19a0c` and version example: `1.21.11-net.fabricmc.yarn.1_21_11.1.21.11+build.3-v2`

@@ -32,7 +32,10 @@ public class StartRunCommand {
                 for (int i = 3; i > 0; i--) {
                     final int count = i;
                     context.getSource().getServer().execute(() -> {
-                        for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+                        for (
+                            ServerPlayerEntity player :
+                            context.getSource().getServer().getPlayerManager().getPlayerList()
+                        ) {
                             player.sendMessage(Text.literal("§e" + count + "..."), true);
                             player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_HAT.value(), 1.0f, 1.0f);
                         }
@@ -47,7 +50,10 @@ public class StartRunCommand {
                     // Unfreeze time when run starts
                     manager.unfreezeTime(context.getSource().getServer());
 
-                    for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+                    for (
+                        ServerPlayerEntity player :
+                        context.getSource().getServer().getPlayerManager().getPlayerList()
+                    ) {
                         manager.removeBlindness(player);
                         player.sendMessage(Text.literal("§aGO! Timer started!"), true);
                         player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 1.0f, 1.0f);

@@ -26,9 +26,12 @@ public class NewRunCommand {
         // Save the current run if it was completed
         if (manager.getState() == RunStateManager.RunState.COMPLETED) {
             manager.saveRunToFile(context.getSource().getServer());
-        } else if (manager.getState() == RunStateManager.RunState.RUNNING ||
-                   manager.getState() == RunStateManager.RunState.PAUSED) {
-            manager.saveRunToFile(context.getSource().getServer()); // Save even if not completed, but mark as incomplete
+        } else if (
+            manager.getState() == RunStateManager.RunState.RUNNING ||
+            manager.getState() == RunStateManager.RunState.PAUSED
+        ) {
+            // Save even if not completed, but mark as incomplete
+            manager.saveRunToFile(context.getSource().getServer());
         }
 
         // Reset the run state

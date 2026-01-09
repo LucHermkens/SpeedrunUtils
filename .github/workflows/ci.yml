@@ -1,0 +1,19 @@
+name: CI
+
+on: push
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+
+      - name: Run Checkstyle
+        run: java -jar checkstyle-13.0.0-all.jar -c checkstyle.xml src

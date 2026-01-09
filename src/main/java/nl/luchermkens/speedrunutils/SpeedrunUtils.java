@@ -55,8 +55,10 @@ public class SpeedrunUtils implements ModInitializer {
             if (manager.getState() != RunStateManager.RunState.RUNNING) return;
 
             // Record splits for dimension changes
-            if (destination.getRegistryKey().equals(World.NETHER) &&
-                !manager.hasSplit(RunStateManager.Split.ENTERED_NETHER)) {
+            if (
+                destination.getRegistryKey().equals(World.NETHER) &&
+                !manager.hasSplit(RunStateManager.Split.ENTERED_NETHER)
+            ) {
                 manager.recordSplit(RunStateManager.Split.ENTERED_NETHER, destination.getServer());
             }
 
@@ -76,9 +78,18 @@ public class SpeedrunUtils implements ModInitializer {
             manager.completeRun();
 
             String time = manager.getFormattedTime();
-            destination.getServer().getPlayerManager().broadcast(Text.literal("§6§l=== RUN COMPLETED ==="), false);
-            destination.getServer().getPlayerManager().broadcast(Text.literal("§aFinal Time: §e" + time), false);
-            destination.getServer().getPlayerManager().broadcast(Text.literal("§6Use §e/newrun §6to start a new speedrun!"), false);
+            destination.getServer().getPlayerManager().broadcast(
+                Text.literal("§6§l=== RUN COMPLETED ==="),
+                false
+            );
+            destination.getServer().getPlayerManager().broadcast(
+                Text.literal("§aFinal Time: §e" + time),
+                false
+            );
+            destination.getServer().getPlayerManager().broadcast(
+                Text.literal("§6Use §e/newrun §6to start a new speedrun!"),
+                false
+            );
 
             // Automatically save the completed run
             manager.saveRunToFile(destination.getServer());

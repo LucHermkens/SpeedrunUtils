@@ -22,7 +22,65 @@ cp .\build\libs\speedrunutils-1.1.0.jar ..\..\..\AppData\Roaming\ModrinthApp\pro
 
 <img src="preview.webp" alt="SpeedrunUtils Preview" width="600" />
 
+## Requirements
+
+- Minecraft 1.21.11
+- Fabric Loader >= 0.18.4
+- Fabric API
+- Java 21+
+
+## Installation
+
+1. Install Fabric Loader
+2. Install Fabric API
+3. Place the mod JAR in your `mods` folder
+
 ## Features
+
+### Gameplay Flow
+
+1. **Server Start:** All players join with blindness effect applied
+2. **Run Start:** Any player runs `/startrun` to begin the countdown
+3. **Speedrun:** Players complete the game while the timer runs
+4. **Completion:** Timer automatically stops when a player exits through the End portal after defeating the Ender Dragon
+
+### Automatic Features
+
+- **Blindness on Join:** Players automatically receive blindness when joining before a run starts or during a pause
+- **Time Freezing:** Time is frozen before the run starts and during pauses, and unfrozen when the run starts/resumes
+- **Player Freezing:** Players are completely frozen in place (movement and interactions) before the run starts and during pauses using packet-based freezing that prevents all client actions including breaking blocks, placing blocks, attacking, and moving
+- **Timer Display:** Action bar shows elapsed time at the bottom of the screen, updating 20 times per second (each tick)
+- **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
+- **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports
+  through the End portal back to the Overworld (after the credits screen)
+- **Run Tracking:** All runs are logged to `speedruns.txt` with:
+  - Date and time
+  - Player names
+  - Final time (formatted as HH:MM:SS.mmm or MM:SS.mmm)
+  - Completion status
+  - Splits (when recorded)
+
+### Splits
+
+Splits are recorded automatically while a run is **RUNNING**. Each split is:
+
+- Broadcast to all players as a chat message
+- Added to a sidebar scoreboard titled **Speedrun Splits**
+- Reflected next to the timer as the **latest split** in the action bar
+- Saved under a **Splits:** section in `speedruns.txt` when the run is saved
+
+#### Current split list
+
+- **First Iron:** Get the "Acquire Hardware" advancement (smelt/obtain an iron ingot)
+- **Entered Nether:** First time a player enters the Nether during the run
+- **Entered Nether Fortress:** Get the "A Terrible Fortress" advancement (enter a nether fortress)
+- **First Blaze Rod:** First blaze rod retrieved by any player during the run
+- **Blaze Rods Done:** Server-wide total blaze rods across all online players reaches **7**
+- **First Ender Pearl:** First ender pearl retrieved by any player during the run
+- **Ender Pearls Done:** Server-wide total ender pearls across all online players reaches **14**
+- **First Ender Eye:** First time an Eye of Ender is crafted
+- **Stronghold Found:** Get the "Eye Spy" advancement (enter a stronghold)
+- **Entered End:** First time a player enters the End during the run
 
 ### Commands
 
@@ -82,57 +140,6 @@ cp .\build\libs\speedrunutils-1.1.0.jar ..\..\..\AppData\Roaming\ModrinthApp\pro
   - Applies blindness to all players
   - Notifies players about server restart for world regeneration
 
-## Gameplay Flow
-
-1. **Server Start:** All players join with blindness effect applied
-2. **Run Start:** Any player runs `/startrun` to begin the countdown
-3. **Speedrun:** Players complete the game while the timer runs
-4. **Completion:** Timer automatically stops when a player exits through the End portal after defeating the Ender Dragon
-
-## Automatic Features
-
-- **Blindness on Join:** Players automatically receive blindness when joining before a run starts or during a pause
-- **Time Freezing:** Time is frozen before the run starts and during pauses, and unfrozen when the run starts/resumes
-- **Player Freezing:** Players are completely frozen in place (movement and interactions) before the run starts and during pauses using packet-based freezing that prevents all client actions including breaking blocks, placing blocks, attacking, and moving
-- **Timer Display:** Action bar shows elapsed time at the bottom of the screen, updating 20 times per second (each tick)
-- **Splits:** Automatically records key milestones, broadcasts them to chat, and shows them on a sidebar scoreboard during the run
-- **Auto-Complete Detection:** Run automatically completes when the Ender Dragon is defeated & a player teleports
-  through the End portal back to the Overworld (after the credits screen)
-- **Run Tracking:** All runs are logged to `speedruns.txt` with:
-  - Date and time
-  - Player names
-  - Final time (formatted as HH:MM:SS.mmm or MM:SS.mmm)
-  - Completion status
-  - Splits (when recorded)
-
-## Splits
-
-Splits are recorded automatically while a run is **RUNNING**. Each split is:
-
-- Broadcast to all players as a chat message
-- Added to a sidebar scoreboard titled **Speedrun Splits**
-- Reflected next to the timer as the **latest split** in the action bar
-- Saved under a **Splits:** section in `speedruns.txt` when the run is saved
-
-### Current split list
-
-- **First Iron:** Get the "Acquire Hardware" advancement (smelt/obtain an iron ingot)
-- **Entered Nether:** First time a player enters the Nether during the run
-- **Entered Nether Fortress:** Get the "A Terrible Fortress" advancement (enter a nether fortress)
-- **First Blaze Rod:** First blaze rod retrieved by any player during the run
-- **Blaze Rods Done:** Server-wide total blaze rods across all online players reaches **7**
-- **First Ender Pearl:** First ender pearl retrieved by any player during the run
-- **Ender Pearls Done:** Server-wide total ender pearls across all online players reaches **14**
-- **First Ender Eye:** First time an Eye of Ender is crafted
-- **Stronghold Found:** Get the "Eye Spy" advancement (enter a stronghold)
-- **Entered End:** First time a player enters the End during the run
-
-## Installation
-
-1. Install Fabric Loader
-2. Install Fabric API
-3. Place the mod JAR in your `mods` folder
-
 ## Building
 
 The built JAR will be in `build/libs/`
@@ -149,9 +156,18 @@ The built JAR will be in `build/libs/`
 ./gradlew build
 ```
 
-## Requirements
+## Code Quality
 
-- Minecraft 1.21.11
-- Fabric Loader >= 0.18.4
-- Fabric API
-- Java 21+
+The project uses [Checkstyle](https://checkstyle.org/) to maintain code quality and consistent formatting standards.
+
+### Checking
+
+Run the following command:
+
+```powershell
+java -jar checkstyle-13.0.0-all.jar -c checkstyle.xml src
+```
+
+### CI
+
+This project is configured with GitHub Actions to automatically run Checkstyle on every push to any branch.

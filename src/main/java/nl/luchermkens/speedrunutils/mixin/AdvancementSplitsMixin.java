@@ -16,7 +16,11 @@ public class AdvancementSplitsMixin {
     private ServerPlayerEntity owner;
 
     @Inject(method = "grantCriterion", at = @At("RETURN"))
-    private void onAdvancementGrant(AdvancementEntry advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
+    private void onAdvancementGrant(
+        AdvancementEntry advancement,
+        String criterionName,
+        CallbackInfoReturnable<Boolean> cir
+    ) {
         if (cir.getReturnValue()) {
             RunStateManager manager = RunStateManager.getInstance();
 

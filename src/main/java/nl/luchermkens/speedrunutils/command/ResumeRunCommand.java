@@ -24,7 +24,10 @@ public class ResumeRunCommand {
             manager.unfreezeTime(context.getSource().getServer());
 
             // Remove blindness from all players
-            for (ServerPlayerEntity player : context.getSource().getServer().getPlayerManager().getPlayerList()) {
+            for (
+                ServerPlayerEntity player :
+                context.getSource().getServer().getPlayerManager().getPlayerList()
+            ) {
                 manager.removeBlindness(player);
             }
 
