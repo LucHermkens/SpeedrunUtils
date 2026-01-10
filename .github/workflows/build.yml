@@ -31,12 +31,12 @@ jobs:
           fi
 
           previous="unknown"
-          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
-            if git show HEAD~1:gradle.properties >/dev/null 2>&1; then
-              previous="$(git show HEAD~1:gradle.properties | awk -F= '$1=="mod_version"{print $2}' | tr -d '\r' | tail -n 1)"
-              if [ -z "${previous}" ]; then
-                previous="unknown"
-              fi
+          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            latest_tag="$(git describe --tags --abbrev=0)"
+            # Extract version from tag format: {version}-{minecraft_version}-{mod_loader}
+            previous="$(echo "${latest_tag}" | cut -d'-' -f1)"
+            if [ -z "${previous}" ]; then
+              previous="unknown"
             fi
           fi
 
